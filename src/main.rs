@@ -1,20 +1,33 @@
-
 fn main() {
-    let numbers: Vec<i32> = vec![-5, 10, 2, -1, 0, 99, 100, 83, 782, 1, 33, 50];
+    let mut numbers: Vec<i32> = vec![-5, 10, 2, -1, 0, 99, 100, 83, 782, 1, 33, 50];
+    let right = &numbers.len() - 1 as usize;
 
-    println!("Before: {:?}", numbers);
-
-    // let sorted_numbers = insertion_sort(numbers);
-    // let sorted_numbers = bubble_sort(numbers);
-    // let sorted_numbers = selection_sort(numbers);
-    let sorted_numbers = merge_sort(numbers);
-    // let sorted_numbers = quick_sort(numbers, 0, numbers.len() - 1);
-
+    
+    // let sorted_numbers = insertion_sort(&mut numbers);
+    // let sorted_numbers = bubble_sort(&mut numbers);
+    // let sorted_numbers = selection_sort(&mut numbers);
+    // let sorted_numbers = merge_sort(&mut numbers);
+    let sorted_numbers = quick_sort(&mut numbers, 0, right);
+    
+    // println!("Before: {:?}", numbers);
     println!("After:  {:?}\n", sorted_numbers);
 }
 
-// Time complexity: O(n log(n))
-fn insertion_sort(mut vec: Vec<i32>) -> Vec<i32> {
+// Time complexity: O(n^2)
+fn bubble_sort(vec: &mut Vec<i32>) -> Vec<i32> {
+    for i in 0..vec.len() {
+        for j in 0..vec.len() - i - 1 {
+            if vec[j] > vec[j + 1] {
+                vec.swap(j, j + 1);
+            }
+        }
+    }
+
+    vec.to_vec()
+}
+
+// Time complexity: O(n^2)
+fn insertion_sort(vec: &mut Vec<i32>) -> Vec<i32> {
     for i in 1..vec.len() {
         let mut j = i;
 
@@ -24,24 +37,11 @@ fn insertion_sort(mut vec: Vec<i32>) -> Vec<i32> {
         }
     }
 
-    return vec.to_vec();
+    vec.to_vec()
 }
 
 // Time complexity: O(n^2)
-fn bubble_sort(mut vec: Vec<i32>) -> Vec<i32> {
-    for i in 0..vec.len() {
-        for j in 0..vec.len() - i - 1 {
-            if vec[j] > vec[j + 1] {
-                vec.swap(j, j + 1);
-            }
-        }
-    }
-
-    return vec.to_vec();
-}
-
-// Time complexity: O(n^2)
-fn selection_sort(mut vec: Vec<i32>) -> Vec<i32> {
+fn selection_sort(vec: &mut Vec<i32>) -> Vec<i32> {
     for i in 0..vec.len() {
         let mut min = i;
 
@@ -56,20 +56,20 @@ fn selection_sort(mut vec: Vec<i32>) -> Vec<i32> {
         }
     }
 
-    return vec.to_vec();
+    vec.to_vec()
 }
 
 // Time complexity: O(n log(n))
-fn merge_sort(vec: Vec<i32>) -> Vec<i32> {
+fn merge_sort(vec: &mut Vec<i32>) -> Vec<i32> {
     let mid = vec.len() / 2;
 
     if vec.len() < 2 {
-        return vec.to_vec();
+        vec.to_vec()
     } else {
-        let left = merge_sort(vec[0..mid].to_vec());
-        let right = merge_sort(vec[mid..].to_vec());
+        let left = merge_sort(&mut vec[0..mid].to_vec());
+        let right = merge_sort(&mut vec[mid..].to_vec());
 
-        return merge(left, right);
+        merge(left, right)
     }
 }
 
@@ -102,34 +102,35 @@ fn merge(left: Vec<i32>, right: Vec<i32>) -> Vec<i32> {
         }
     }
 
-    return merged;
+    merged
 }
 
-// fn quick_sort(vec: Vec<i32>, left: usize, right: usize) -> Vec<i32> {
-//     if left >= right {
-//         return vec.to_vec();
-//     }
+// Time complexity: O(n log(n))
+fn quick_sort(vec: &mut Vec<i32>, left: usize, right: usize) -> Vec<i32> {
+    if left >= right {
+        return vec.to_vec();
+    }
 
-//     let pivot_index = partition(vec, left, right);
+    let pivot_index = partition(vec, left, right);
     
-//     quick_sort(vec, left, pivot_index - 1);
-//     quick_sort(vec, pivot_index + 1, right);
+    quick_sort(vec, left, pivot_index - 1);
+    quick_sort(vec, pivot_index + 1, right);
 
-//     return vec.to_vec();
-// }
+    vec.to_vec()
+}
 
-// fn partition(mut vec: Vec<i32>, left: usize, right: usize) -> usize {
-//     let pivot_value = vec[right];
-//     let mut partition_index = left;
+fn partition(vec: &mut [i32], left: usize, right: usize) -> usize {
+    let pivot_value = vec[right];
+    let mut partition_index = left;
 
-//     for i in left..right {
-//         if vec[i] < pivot_value {
-//             vec.swap(i, partition_index);
-//             partition_index += 1;
-//         }
-//     }
+    for i in left..right {
+        if vec[i] < pivot_value {
+            vec.swap(i, partition_index);
+            partition_index += 1;
+        }
+    }
 
-//     vec.swap(right, partition_index);
+    vec.swap(right, partition_index);
 
-//     return partition_index;
-// }
+    partition_index
+}
